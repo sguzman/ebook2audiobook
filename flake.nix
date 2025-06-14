@@ -19,11 +19,11 @@
           ffmpeg-full
           nodejs
           mecab
-          mecab-ipadic
           espeak-ng
           rustc
           cargo
           sox
+          tts
         ];
 
         # List of Python dependencies.
@@ -36,7 +36,6 @@
           pillow
           
           # TTS and ASR
-          TTS                 # CORRECTED: The package name is 'TTS' (case-sensitive).
           whisper
 
           # Web and API
