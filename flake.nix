@@ -48,7 +48,7 @@
           pillow
           
           # TTS and ASR
-          tts                 # Coqui-TTS. This is a key dependency.
+          coqui-tts           # CORRECTED: The Python package is named 'coqui-tts', not 'tts'.
           whisper             # OpenAI Whisper for ASR.
 
           # Web and API
@@ -138,16 +138,5 @@
             '';
           };
         };
-
-        # Apps that can be run with `nix run`
-        apps = {
-          # Example: `nix run .#app`
-          default = {
-            type = "app";
-            program = "${pythonEnv}/bin/python";
-          };
-        };
-
       });
 }
-
