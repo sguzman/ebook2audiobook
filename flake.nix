@@ -20,6 +20,7 @@
           nodejs
           mecab
           espeak-ng
+          conda
           rustc
           cargo
           sox

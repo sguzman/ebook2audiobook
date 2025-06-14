@@ -1,0 +1,25 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+python_env/
+venv/
+env/
+
+# Model files and caches
+models/matplotlib/
+models/numba/
+models/pip/
+models/tts/
+
+# Temporary files
+tmp/
+*.tmp
+*.temp
+
+# OS specific
+.DS_Store
+Thumbs.db
+
