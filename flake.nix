@@ -15,7 +15,8 @@
         };
 
         # --- Custom Python Packages ---
-        # Define packages here that are missing, broken, or need specific build steps.
+        # Only define packages that are truly missing from nixpkgs.
+        # Since sudachipy is likely fixed, we no longer need to define it here.
 
         m4b-util = pkgs.python3Packages.buildPythonPackage rec {
           pname = "m4b-util";
@@ -54,28 +55,6 @@
           doCheck = false;
         };
 
-        sudachipy-pkg = pkgs.python3Packages.buildPythonPackage rec {
-          pname = "sudachipy";
-          version = "0.6.10";
-          format = "setuptools";
-          src = pkgs.fetchPypi {
-            inherit pname version;
-            hash = "sha256-uJEKRhDemLLDy23DNi/qk+O6UFnx60RaaLqpWFJ48xs=";
-          };
-          nativeBuildInputs = with pkgs; [
-            pkgs.python3Packages.setuptools-rust
-            rustPlatform.cargoSetupHook
-            cargo
-            rustc
-          ];
-          # Use fetchzip to download and extract the pre-vendored Rust dependencies.
-          # This is the modern replacement for the old `fetchCargoTarball` function.
-          cargoDeps = pkgs.fetchzip {
-            url = "https://github.com/WorksApplications/SudachiPy/releases/download/v${version}/sudachipy-v${version}-crates.tar.gz";
-            sha256 = "sha256-r2zK/W49Yk/Fz15W4NlR0E8T3eH/sT9t0B8L8Y2l4jM=";
-          };
-        };
-
         systemDeps = with pkgs; [
           calibre ffmpeg-full nodejs mecab espeak-ng rustc cargo sox tts
         ];
@@ -87,10 +66,12 @@
           anyio charset-normalizer ebooklib einops encodec huggingface-hub inflect
           lxml pydantic pydub python-dotenv soupsieve tqdm transformers pyopengl
           unidecode ray rich
-          # Dependencies we fixed
+          # Dependencies that were broken/missing in nixpkgs
           pynvml sudachidict-core unidic-lite
+          # Use the version of sudachipy from nixpkgs, which should be fixed.
+          sudachipy
           # Custom-packaged dependencies
-          m4b-util translate-pkg suno-bark-pkg sudachipy-pkg
+          m4b-util translate-pkg suno-bark-pkg
         ];
 
         pythonEnv = pkgs.python312.withPackages pythonDeps;
