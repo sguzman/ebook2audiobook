@@ -59,7 +59,10 @@
           soupsieve
           tqdm
           transformers
+          pyopengl
           unidecode
+          ray
+          rich
         ];
 
         pythonEnv = pkgs.python312.withPackages pythonDeps;
