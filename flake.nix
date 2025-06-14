@@ -60,7 +60,7 @@
           format = "setuptools";
           src = pkgs.fetchPypi {
             inherit pname version;
-            hash = "sha256-HWAGHl+PPER5mnhaN3uDDRpFuBoXlfAOHdUlGSnS8jI=";
+            hash = "sha256-uJEKRhDemLLDy23DNi/qk+O6UFnx60RaaLqpWFJ48xs=";
           };
           nativeBuildInputs = with pkgs; [
             pkgs.python3Packages.setuptools-rust
