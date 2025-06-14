@@ -45,12 +45,11 @@
             sha256 = "7e70ffa46f193cc744be7c88b8e1323f10f6b2bb90d24bb5d29fdf1e56618783";
           };
           
-          # Add build-time dependencies here to prevent the setup.py from trying to fetch them online.
+          # Add build-time dependencies, but remove pytest-runner as it's deprecated and not needed since we aren't running tests.
           nativeBuildInputs = with pkgs.python3Packages; [
             setuptools
             pip
             wheel
-            pytest-runner
           ];
 
           propagatedBuildInputs = with pkgs.python3Packages; [
