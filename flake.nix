@@ -15,7 +15,6 @@
         };
 
         # --- Custom Python Packages ---
-        # Define packages here that are missing or need specific build steps.
 
         m4b-util = pkgs.python3Packages.buildPythonPackage rec {
           pname = "m4b-util";
@@ -54,6 +53,7 @@
           doCheck = false;
         };
 
+        # The final, correct build for sudachipy.
         sudachipy-pkg = pkgs.python3Packages.buildPythonPackage rec {
           pname = "sudachipy";
           version = "0.6.10";
@@ -69,8 +69,13 @@
             rustc
           ];
           
-          # This is the corrected section. Use `cargoExtraConfig` and provide a simple string.
-          # This will be appended to the Cargo.toml file during the build to patch the dependency.
+          # 1. Provide the pre-fetched bundle of Rust dependencies.
+          cargoDeps = pkgs.fetchzip {
+            url = "https://github.com/WorksApplications/SudachiPy/releases/download/v${version}/sudachipy-v${version}-crates.tar.gz";
+            sha256 = "sha256-r2zK/W49Yk/Fz15W4NlR0E8T3eH/sT9t0B8L8Y2l4jM=";
+          };
+          
+          # 2. Provide the patch to fix the pyo3 version conflict within that bundle.
           cargoExtraConfig = ''
             [patch.crates-io]
             pyo3 = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
@@ -83,7 +88,6 @@
           calibre ffmpeg-full nodejs mecab espeak-ng rustc cargo sox tts
         ];
 
-        # Cleaned-up list of all Python dependencies.
         pythonDeps = ps: with ps; [
           # Core application dependencies
           torch numpy pandas scipy pillow whisper gradio requests beautifulsoup4
