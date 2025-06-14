@@ -15,7 +15,7 @@
         };
 
         # --- Custom Python Packages ---
-        # m4b-util is not in nixpkgs, so we package it here.
+        # Package missing dependencies directly in the flake to ensure they are found.
         m4b-util = pkgs.python3Packages.buildPythonPackage rec {
           pname = "m4b-util";
           version = "2025.4.16";
@@ -26,15 +26,28 @@
             hash = "sha256-RkX1Y6V1rYF+Hn71B8X3Z3XjK2n4k6iN9w8Z3p8Hn4g=";
           };
 
-          # Dependencies needed to build and run m4b-util
           propagatedBuildInputs = with pkgs.python3Packages; [
             lark
             natsort
             rich
             poetry-core
           ];
+          doCheck = false;
+        };
+        
+        translate-pkg = pkgs.python3Packages.buildPythonPackage rec {
+          pname = "translate";
+          version = "3.6.1";
+          format = "setuptools";
 
-          # The package has no tests to run
+          src = pkgs.fetchPypi {
+            inherit pname version;
+            sha256 = "1d331949a834164214545089335a9174aa4855f75662105151216d7684073d32";
+          };
+
+          propagatedBuildInputs = with pkgs.python3Packages; [
+            six
+          ];
           doCheck = false;
         };
 
@@ -53,22 +66,15 @@
         # List of Python dependencies.
         pythonDeps = ps: with ps; [
           # --- Packages from your original flake ---
-          # Core ML and Data Science
           torch
           numpy
           pandas
           scipy
           pillow
-          
-          # TTS and ASR
           whisper
-
-          # Web and API
           gradio
           requests
           beautifulsoup4
-          
-          # Utilities
           anyio
           charset-normalizer
           ebooklib
@@ -89,15 +95,15 @@
           rich
 
           # --- Added to fix build errors ---
-          pynvml # For 'nvidia-ml-py'
-          translate
-          bark # For 'suno-bark'
+          pynvml      # For 'nvidia-ml-py'
+          bark        # For 'suno-bark'
           sudachipy
           sudachidict-core
           unidic-lite # For 'unidic'
 
-          # --- Add our custom-packaged m4b-util ---
+          # --- Add our custom-packaged dependencies ---
           m4b-util
+          translate-pkg
         ];
 
         pythonEnv = pkgs.python312.withPackages pythonDeps;
@@ -110,7 +116,6 @@
           python3 = prev.python3.override {
             packageOverrides = python-self: python-super: {
               torch = cudaPkgs.pytorch;
-              # You can override other packages here if needed, e.g., torchvision
               torchvision = cudaPkgs.torchvision;
             };
           };
