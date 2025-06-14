@@ -51,6 +51,28 @@
           doCheck = false;
         };
 
+        suno-bark-pkg = pkgs.python3Packages.buildPythonPackage rec {
+          pname = "suno-bark";
+          version = "1.0.1";
+          format = "pyproject";
+
+          src = pkgs.fetchPypi {
+            inherit pname version;
+            sha256 = "sha256-gZ22oP9wG+3+Qj0iB/K9o3wz0f1i8n9t7X6yP5aQ0cE=";
+          };
+
+          propagatedBuildInputs = with pkgs.python3Packages; [
+            numpy
+            scipy
+            tokenizers
+            torch
+            transformers
+            encodec
+            huggingface-hub # Added as it's a bark dependency
+          ];
+          doCheck = false;
+        };
+
         systemDeps = with pkgs; [
           calibre
           ffmpeg-full
@@ -96,7 +118,6 @@
 
           # --- Added to fix build errors ---
           pynvml      # For 'nvidia-ml-py'
-          suno-bark   # Correct name for the bark package
           sudachipy
           sudachidict-core
           unidic-lite # For 'unidic'
@@ -104,6 +125,7 @@
           # --- Add our custom-packaged dependencies ---
           m4b-util
           translate-pkg
+          suno-bark-pkg # Using our custom package now
         ];
 
         pythonEnv = pkgs.python312.withPackages pythonDeps;
