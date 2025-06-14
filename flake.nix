@@ -42,7 +42,8 @@
 
           src = pkgs.fetchPypi {
             inherit pname version;
-            sha256 = "1d331949a834164214545089335a9174aa4855f75662105151216d7684073d32";
+            # Updated the hash to the correct one provided by the Nix error message.
+            sha256 = "7e70ffa46f193cc744be7c88b8e1323f10f6b2bb90d24bb5d29fdf1e56618783";
           };
 
           propagatedBuildInputs = with pkgs.python3Packages; [
@@ -68,7 +69,7 @@
             torch
             transformers
             encodec
-            huggingface-hub # Added as it's a bark dependency
+            huggingface-hub
           ];
           doCheck = false;
         };
@@ -125,7 +126,7 @@
           # --- Add our custom-packaged dependencies ---
           m4b-util
           translate-pkg
-          suno-bark-pkg # Using our custom package now
+          suno-bark-pkg
         ];
 
         pythonEnv = pkgs.python312.withPackages pythonDeps;
