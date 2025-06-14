@@ -96,7 +96,7 @@
 
           # --- Added to fix build errors ---
           pynvml      # For 'nvidia-ml-py'
-          bark        # For 'suno-bark'
+          suno-bark   # Correct name for the bark package
           sudachipy
           sudachidict-core
           unidic-lite # For 'unidic'
