@@ -54,14 +54,12 @@
           doCheck = false;
         };
 
-        # Definitive fix for the sudachipy build.
         sudachipy-pkg = pkgs.python3Packages.buildPythonPackage rec {
           pname = "sudachipy";
           version = "0.6.10";
           format = "setuptools";
           src = pkgs.fetchPypi {
             inherit pname version;
-            # Your corrected hash:
             hash = "sha256-uJEKRhDemLLDy23DNi/qk+O6UFnx60RaaLqpWFJ48xs=";
           };
           nativeBuildInputs = with pkgs; [
@@ -71,15 +69,14 @@
             rustc
           ];
           
-          # This is the key: we override the pyo3 dependency to provide a version that satisfies the `^0.23` requirement.
-          cargoPatches = {
-            "pyo3-build-config" = ''
-              [patch.crates-io]
-              pyo3 = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
-              pyo3-build-config = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
-              pyo3-macros = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
-            '';
-          };
+          # This is the corrected section. Use `cargoExtraConfig` and provide a simple string.
+          # This will be appended to the Cargo.toml file during the build to patch the dependency.
+          cargoExtraConfig = ''
+            [patch.crates-io]
+            pyo3 = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
+            pyo3-build-config = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
+            pyo3-macros = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
+          '';
         };
 
         systemDeps = with pkgs; [
