@@ -58,39 +58,26 @@
           pname = "sudachipy";
           version = "0.6.10";
           format = "setuptools";
-
           src = pkgs.fetchPypi {
             inherit pname version;
             hash = "sha256-HWAGHl+PPER5mnhaN3uDDRpFuBoXlfAOHdUlGSnS8jI=";
           };
-
           nativeBuildInputs = with pkgs; [
             pkgs.python3Packages.setuptools-rust
             rustPlatform.cargoSetupHook
             cargo
             rustc
           ];
-
-          # Use the new, correct function `fetchCargoVendor` for nixpkgs-unstable.
-          cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-            src = pkgs.fetchurl {
-              url = "https://github.com/WorksApplications/SudachiPy/releases/download/v${version}/sudachipy-v${version}-crates.tar.gz";
-              sha256 = "sha256-r2zK/W49Yk/Fz15W4NlR0E8T3eH/sT9t0B8L8Y2l4jM=";
-            };
+          # Use fetchzip to download and extract the pre-vendored Rust dependencies.
+          # This is the modern replacement for the old `fetchCargoTarball` function.
+          cargoDeps = pkgs.fetchzip {
+            url = "https://github.com/WorksApplications/SudachiPy/releases/download/v${version}/sudachipy-v${version}-crates.tar.gz";
+            sha256 = "sha256-r2zK/W49Yk/Fz15W4NlR0E8T3eH/sT9t0B8L8Y2l4jM=";
           };
         };
 
-
         systemDeps = with pkgs; [
-          calibre
-          ffmpeg-full
-          nodejs
-          mecab
-          espeak-ng
-          rustc
-          cargo
-          sox
-          tts
+          calibre ffmpeg-full nodejs mecab espeak-ng rustc cargo sox tts
         ];
 
         # List of all Python dependencies for the environment.
