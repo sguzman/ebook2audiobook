@@ -94,13 +94,12 @@
               cudaPkgs.cudatoolkit
               cudaPkgs.cudnn
               cudaPkgs.nccl
-              pkgs.nvidia-driver
             ];
             shellHook = ''
               echo "--- Ebook2Audiobook GPU Environment ---"
               echo "CUDA Toolkit and NVIDIA drivers are available."
               echo "Run the application with: python app.py --device gpu"
-              export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath (with cudaPkgs; [ cudatoolkit cudnn nccl ])}:${pkgs.nvidia-driver}/lib"
+              export LD_LIBRARY_PATH="${pkgs.lib.makeLibraryPath (with cudaPkgs; [ cudatoolkit cudnn nccl ])}"
               export XLA_FLAGS=--xla_gpu_cuda_data_dir="${cudaPkgs.cudatoolkit}"
             '';
           };
