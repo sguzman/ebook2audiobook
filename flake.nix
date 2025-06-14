@@ -15,8 +15,7 @@
         };
 
         # --- Custom Python Packages ---
-        # Only define packages that are truly missing from nixpkgs.
-        # Since sudachipy is likely fixed, we no longer need to define it here.
+        # Define packages here that are missing or need specific build steps.
 
         m4b-util = pkgs.python3Packages.buildPythonPackage rec {
           pname = "m4b-util";
@@ -55,23 +54,49 @@
           doCheck = false;
         };
 
+        # Definitive fix for the sudachipy build.
+        sudachipy-pkg = pkgs.python3Packages.buildPythonPackage rec {
+          pname = "sudachipy";
+          version = "0.6.10";
+          format = "setuptools";
+          src = pkgs.fetchPypi {
+            inherit pname version;
+            # Your corrected hash:
+            hash = "sha256-uJEKRhDemLLDy23DNi/qk+O6UFnx60RaaLqpWFJ48xs=";
+          };
+          nativeBuildInputs = with pkgs; [
+            pkgs.python3Packages.setuptools-rust
+            rustPlatform.cargoSetupHook
+            cargo
+            rustc
+          ];
+          
+          # This is the key: we override the pyo3 dependency to provide a version that satisfies the `^0.23` requirement.
+          cargoPatches = {
+            "pyo3-build-config" = ''
+              [patch.crates-io]
+              pyo3 = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
+              pyo3-build-config = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
+              pyo3-macros = { git = "https://github.com/PyO3/pyo3", rev = "v0.22.2" }
+            '';
+          };
+        };
+
         systemDeps = with pkgs; [
           calibre ffmpeg-full nodejs mecab espeak-ng rustc cargo sox tts
         ];
 
-        # List of all Python dependencies for the environment.
+        # Cleaned-up list of all Python dependencies.
         pythonDeps = ps: with ps; [
           # Core application dependencies
           torch numpy pandas scipy pillow whisper gradio requests beautifulsoup4
           anyio charset-normalizer ebooklib einops encodec huggingface-hub inflect
           lxml pydantic pydub python-dotenv soupsieve tqdm transformers pyopengl
           unidecode ray rich
-          # Dependencies that were broken/missing in nixpkgs
+          # Dependencies from nixpkgs
           pynvml sudachidict-core unidic-lite
-          # Use the version of sudachipy from nixpkgs, which should be fixed.
-          sudachipy
           # Custom-packaged dependencies
-          m4b-util translate-pkg suno-bark-pkg
+          m4b-util translate-pkg suno-bark-pkg sudachipy-pkg
         ];
 
         pythonEnv = pkgs.python312.withPackages pythonDeps;
