@@ -15,7 +15,7 @@
         };
 
         # --- Custom Python Packages ---
-        # Define packages here that are missing or broken in the environment.
+        # Define packages here that are missing, broken, or need specific build steps.
 
         m4b-util = pkgs.python3Packages.buildPythonPackage rec {
           pname = "m4b-util";
@@ -54,7 +54,6 @@
           doCheck = false;
         };
 
-        # Known-good build recipe for sudachipy to resolve Rust dependency conflicts.
         sudachipy-pkg = pkgs.python3Packages.buildPythonPackage rec {
           pname = "sudachipy";
           version = "0.6.10";
@@ -72,10 +71,12 @@
             rustc
           ];
 
-          # This provides a pre-fetched, known-good bundle of Rust dependencies.
-          cargoDeps = pkgs.rustPlatform.fetchCargoTarball {
-            url = "https://github.com/WorksApplications/SudachiPy/releases/download/v${version}/sudachipy-v${version}-crates.tar.gz";
-            sha256 = "sha256-r2zK/W49Yk/Fz15W4NlR0E8T3eH/sT9t0B8L8Y2l4jM=";
+          # Use the new, correct function `fetchCargoVendor` for nixpkgs-unstable.
+          cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
+            src = pkgs.fetchurl {
+              url = "https://github.com/WorksApplications/SudachiPy/releases/download/v${version}/sudachipy-v${version}-crates.tar.gz";
+              sha256 = "sha256-r2zK/W49Yk/Fz15W4NlR0E8T3eH/sT9t0B8L8Y2l4jM=";
+            };
           };
         };
 
@@ -92,24 +93,17 @@
           tts
         ];
 
-        # List of Python dependencies.
+        # List of all Python dependencies for the environment.
         pythonDeps = ps: with ps; [
-          # --- Packages from your original flake ---
+          # Core application dependencies
           torch numpy pandas scipy pillow whisper gradio requests beautifulsoup4
           anyio charset-normalizer ebooklib einops encodec huggingface-hub inflect
           lxml pydantic pydub python-dotenv soupsieve tqdm transformers pyopengl
           unidecode ray rich
-
-          # --- Added to fix build errors ---
-          pynvml      # For 'nvidia-ml-py'
-          sudachidict-core
-          unidic-lite # For 'unidic'
-
-          # --- Add our custom-packaged dependencies ---
-          m4b-util
-          translate-pkg
-          suno-bark-pkg
-          sudachipy-pkg # Use our custom-built version
+          # Dependencies we fixed
+          pynvml sudachidict-core unidic-lite
+          # Custom-packaged dependencies
+          m4b-util translate-pkg suno-bark-pkg sudachipy-pkg
         ];
 
         pythonEnv = pkgs.python312.withPackages pythonDeps;
