@@ -1,0 +1,48 @@
+services:
+  ebook2audiobook:
+    runtime: runc
+    image: ebook2audiobook:cu121
+    container_name: e2a-gui
+    user: "0"
+    cpus: "4.0"
+    ports:
+      - "7860:7860"
+    environment:
+      STANZA_RESOURCES_DIR: "/app/ebook2audiobook/models/stanza"
+      PYTHONUNBUFFERED: "1"
+      PYTHONFAULTHANDLER: "1"
+      UV_CACHE_DIR: "/opt/cache/uv"
+      UNIDIC_DIR: "/opt/venv/lib/python3.12/site-packages/unidic/dicdir"
+      GRADIO_SERVER_NAME: "0.0.0.0"
+      GRADIO_SERVER_PORT: "7860"
+    volumes:
+      - /drive/services/ebook2audiobook/ebooks:/app/ebooks
+      - /drive/services/ebook2audiobook/audiobooks:/app/audiobooks
+      - /drive/services/ebook2audiobook/tmp:/app/ebook2audiobook/tmp
+      - /drive/services/ebook2audiobook/voices:/app/voices
+      - /drive/services/ebook2audiobook/cache:/opt/cache
+      - /drive/cache/dot-cache/uv:/opt/cache/uv
+      - /drive/cache/dot-cache/huggingface/hub:/app/ebook2audiobook/models/tts
+      - /drive/AI/dicdir:/opt/venv/lib/python3.12/site-packages/unidic/dicdir:ro
+      - /drive/AI/stanza:/app/ebook2audiobook/models/stanza
+    command:
+      - /opt/venv/bin/python
+      - -u
+      - -X
+      - faulthandler
+      - app.py
+    dns:
+      - 172.31.0.53
+    networks:
+      - default
+      - dnsnet
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: ["gpu"]
+
+networks:
+  default: {}
+  dnsnet:
+    external: true
