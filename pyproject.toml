@@ -55,7 +55,7 @@ dependencies = [
 	"coqui-tts[languages]==0.27.5"
 ]
 readme = "README.md"
-requires-python = ">3.9,<3.13"
+requires-python = ">=3.10,<3.13"
 classifiers = [
     "Programming Language :: Python :: 3",
     "License :: OSI Approved :: MIT License",
