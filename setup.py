@@ -15,7 +15,8 @@ with open("README.md", "r", encoding='utf-8') as fh:
     long_description = fh.read()
 
 with open('requirements.txt') as f:
-    requirements = f.read().splitlines()
+    requirements = [line.strip() for line in f if line.strip()]
+install_requirements = [r for r in requirements if not r.startswith("ext/py/")]
 
 class PostInstallCommand(install):
     def run(self):
@@ -28,14 +29,14 @@ class PostInstallCommand(install):
 setup(
     name='ebook2audiobook',
     version=get_version(),
-    python_requires=">3.9,<3.13",
+    python_requires=">=3.10,<3.13",
     author="Drew Thomasson",
     description="Convert eBooks to audiobooks with chapters and metadata",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/DrewThomasson/ebook2audiobook",
     packages=find_packages(),
-    install_requires=requirements,
+    install_requires=install_requirements,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
