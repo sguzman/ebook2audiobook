@@ -84,10 +84,12 @@ RUN --mount=type=bind,from=uv-cache,source=.,target=/opt/cache/uv,rw \
       "wheel==${WHEEL_VERSION}"
 
 ######################################################################
-# App source: copy only requirements.txt first for maximum caching
+# App source: copy only requirements.txt and local extras before dependencies
 ######################################################################
 WORKDIR /app/ebook2audiobook
 COPY requirements.txt /app/ebook2audiobook/requirements.txt
+COPY ext/py/num2words /app/ebook2audiobook/ext/py/num2words
+COPY ext/py/demucs /app/ebook2audiobook/ext/py/demucs
 
 ######################################################################
 # Torch/CUDA: pin known-compatible cu121 trio (official PyTorch guidance)
